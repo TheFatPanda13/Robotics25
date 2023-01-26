@@ -6,12 +6,12 @@ BP = brickpi3.BrickPi3()
 try:
     controller = Controller(BP)
     for distance in [5, 10, 15, 20, 25]:
-        controller.go_straight(distance)
+        distance = distance / 100 
+        controller.go_straight(distance= distance)
+        controller.BP.reset_all()
         time.sleep(30)
-    controller.BP.reset_all()
 
 except KeyboardInterrupt: 
     BP.reset_all()
-
 
 
