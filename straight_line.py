@@ -12,12 +12,10 @@ def go_straight(value, duration):
 			print(f"degrees: {degrees}, velocity: {velocity}")
 	BP.set_motor_power(BP.PORT_A + BP.PORT_B + BP.PORT_C + BP.PORT_D, 0)
 
-def rotate90(value, duration):
+def rotate90():
 	BP.set_motor_power(BP.PORT_A + BP.PORT_B + BP.PORT_C + BP.PORT_D, 0)
-	BP.set_motor_power(BP.PORT_B, value)
-	BP.set_motor_power(BP.PORT_C, -value)
-	time.sleep(duration)
-	BP.set_motor_power(BP.PORT_B, BP.PORT_C, 0)
+	BP.set_motor_position(BP.PORT_B, BP.get_motor_encoder(BP.PORT_B) + 244)
+	BP.set_motor_position(BP.PORT_C, BP.get_motor_encoder(BP.PORT_C) - 244)
 
 def drawSquare():
     for i in range(4):
@@ -34,9 +32,7 @@ def drawX():
  #to do calibrate and find optimal values for go_straight and rotate90
 
 try:
-	go_straight(10, 5)
-	rotate90(10,2)
-	go_straight(10,5)
+	rotate90()
 
 except KeyboardInterrupt: # except the program gets interrupted by Ctrl+C on the keyboard.
   	BP.reset_all() 
