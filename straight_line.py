@@ -29,7 +29,13 @@ def drawX():
  #to do calibrate and find optimal values for go_straight and rotate90
 
 try:
-	go_straight(1)
+	# go_straight(1)
+	BP.set_motor_power(BP.PORT_A + BP.PORT_B + BP.PORT_C + BP.PORT_D, 5)
+	time.sleep(5)
+	BP.set_motor_power(BP.PORT_A + BP.PORT_B + BP.PORT_C + BP.PORT_D, 0)
+
+
+
 
 except KeyboardInterrupt: # except the program gets interrupted by Ctrl+C on the keyboard.
   	BP.reset_all() 
