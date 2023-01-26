@@ -11,10 +11,10 @@ def drawSquare(controller):
         time.sleep(2)
 
 def rotate90(BP):
-    BP.set_motor_limits(BP.PORT_B, dps=40)
-    BP.set_motor_limits(BP.PORT_C, dps=40)
-    BP.set_motor_position(BP.PORT_B, BP.get_motor_encoder(BP.PORT_B) + 244)
-    BP.set_motor_position(BP.PORT_C, BP.get_motor_encoder(BP.PORT_C) - 244)
+    BP.set_motor_limits(BP.PORT_B, power=50, dps=40)
+    BP.set_motor_limits(BP.PORT_C, power=50, dps=40)
+    BP.set_motor_position(BP.PORT_B, BP.get_motor_encoder(BP.PORT_B) + 600)
+    BP.set_motor_position(BP.PORT_C, BP.get_motor_encoder(BP.PORT_C) - 600)
 
 
 try:
