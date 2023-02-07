@@ -75,7 +75,7 @@ try:
    controller.turn_on_spot(90)
    time.sleep(3)
    controller.turn_on_spot(180)
-   contoller.BP.reset_all()
+   controller.BP.reset_all()
 
 except KeyboardInterrupt: 
    BP.reset_all() 
