@@ -13,6 +13,7 @@ class Controller():
         particle = np.array([0,0,0,1/set.length])
         self.particles = np.tile(particle, (100,1)) #initialise particle set shape 100, 4
         self.set_length = set_length
+        self.pos = (0,0,0)
 
     def convert_distance_to_rotation(self, distance):
         print(distance, self.wheel_circ)
@@ -71,8 +72,8 @@ class Controller():
     def update_particles_straight(self, delta):
         angles = self.particles[:,-2] #grab the angles of each particle
         
-        update = np.array([[delta + random.gauss(0, sigma) * np.cos(angles[i]), 
-                            delta + random.gauss(0, sigma) * np.sin(angles[i]), 
+        update = np.array([[delta + random.gauss(0, 0.05) * np.cos(angles[i]), 
+                            delta + random.gauss(0, 0.05) * np.sin(angles[i]), 
                             0, 
                             0] for i in self.set_length])
 
@@ -81,15 +82,19 @@ class Controller():
         #Display.draw_particles(self.particles[:,:-1])
     
     def update_particles_rotate(self, theta):
-        update = np.array([[0, 0, theta + random.gauss(0, sigma), 0] for i in self.set_length])
+        update = np.array([[0, 0, theta + random.gauss(0, 0.05), 0] for i in self.set_length])
         
-        self.particles += update 
+        self.particles += update
+        
+        self.pos = tuple(np.mean(self.particles[:,:-1]))
     
     def draw_square(self):
         for _ in range(4):
             for _ in range(4):
-                self.go_straight(0.85)
+                self.go_straight(0.085)
                 self.update_particles_straight(10)
+                time.sleep(5)
             self.turn_on_spot(90)
             self.update_particles_rotate(90)
-            
+    
+    

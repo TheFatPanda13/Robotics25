@@ -4,9 +4,13 @@ def draw_particles(particles):
 
 #transform the particles (x,y) coordinates to suitable screen coordinates
 def transform_particles(particles):
-    return [(some_transformation(x), some_transformation(y), theta) for (x,y,theta) in particles]
+    return [(200 + (x * 10), 200 + (y * 10), theta) for (x,y,theta) in particles]
 
 
 #draws the square to the display
 def draw_square():
-    print("drawLine", str(x1,y1,x2,y2))
+    print("drawLine:", str((200,200,200,600)))
+    print("drawLine:", str((200,600,600,600)))
+    print("drawLine:", str((600,600,600,200)))
+    print("drawLine:", str((600,200,200,200)))
+    
