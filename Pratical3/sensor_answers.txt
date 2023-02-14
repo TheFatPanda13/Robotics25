@@ -1,0 +1,12 @@
+1. Reliable measurements can be taken from 20cm to 180cm when perependicular to the wall.
+
+2. Maximum non orthogonal angle at which robot ultrasonic sensor gives sensible reading was 55 degrees.
+
+3. 20cm -> [20, 20, 21, 20, 20, 20, 20, 21, 20, 20]
+   40cm -> see below 
+
+4. 40cm -> [40, 40, 40, 40, 40, 40, 40, 40, 40, 40]
+   100cm -> [100, 100, 100, 100, 99, 100, 101, 100, 100, 100]
+   Larger depths have marginally more uncertainty
+
+5. Garbage values are not common, and although the values from the sensors can fluctuate, the values are seldom show insensible readings. Situations where it is too far from any surface will give the maximum reading.
