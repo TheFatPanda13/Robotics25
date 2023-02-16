@@ -1,0 +1,100 @@
+import time, brickpi3, random, Display, numpy as np
+
+class Controller():
+    def __init__(self, BP, wheel_radius = 0.034, wheelbase = 0.185, total_power = 20, set_length = 100):
+        self.BP = BP
+        self.wheel_radius = wheel_radius
+        self.wheelbase = wheelbase
+        self.wheel_circ = 2 * np.pi * self.wheel_radius
+
+        self.ports = [self.BP.PORT_B, self.BP.PORT_C]
+        self.total_power = total_power
+        
+        particle = np.array([0,0,0,1/set.length])
+        self.particles = np.tile(particle, (100,1)) #initialise particle set shape 100, 4
+        self.set_length = set_length
+        self.pos = (0,0,0)
+
+    def convert_distance_to_rotation(self, distance):
+        print(distance, self.wheel_circ)
+        return  360 * distance / self.wheel_circ
+
+    def go_straight(self, distance, gain = 0.5):
+        for port in self.ports:
+            self.BP.offset_motor_encoder(port, self.BP.get_motor_encoder(port))
+
+        positions = np.array([self.BP.get_motor_encoder(port) for port in self.ports])
+        degrees_to_rotate = self.convert_distance_to_rotation(distance)
+        print(degrees_to_rotate)
+        while np.all(positions < degrees_to_rotate):
+            time.sleep(0.01)
+            print(positions)
+            positions = np.array([self.BP.get_motor_encoder(port) for port in self.ports])
+            update = gain * abs(positions[0] - positions[1])
+            faster_motor, slower_motor = np.argmax(positions), np.argmin(positions)
+
+            # print(update, self.total_power - update, self.total_power + update)
+            self.BP.set_motor_power(self.ports[faster_motor], self.total_power - update)
+            self.BP.set_motor_power(self.ports[slower_motor], self.total_power + update)
+
+        print([self.BP.get_motor_encoder(port) for port in self.ports])
+        self.BP.reset_all()
+
+    def robot_angle_to_wheel_rotation(self, angle):
+        dist = self.wheelbase * angle / 360 * np.pi 
+        degrees = self.convert_distance_to_rotation(dist)
+        return degrees
+
+    def turn_on_spot(self, angle, gain = 0.5):
+        for port in self.ports:
+            self.BP.offset_motor_encoder(port, self.BP.get_motor_encoder(port))
+
+        positions = np.array([self.BP.get_motor_encoder(port) for port in self.ports])
+        degrees_to_rotate = self.robot_angle_to_wheel_rotation(angle)
+        print(degrees_to_rotate)
+        while np.all(np.abs(positions) < degrees_to_rotate):
+            time.sleep(0.01)
+            print(positions)
+            positions = np.array([self.BP.get_motor_encoder(port) for port in self.ports])
+            update = gain * (positions[0] +positions[1])
+            
+            # print(update, self.total_power - update, self.total_power + update)
+            if update>0:
+                self.BP.set_motor_power(self.ports[0], self.total_power - update)
+                self.BP.set_motor_power(self.ports[1], -self.total_power - update)
+            else:
+                self.BP.set_motor_power(self.ports[0], self.total_power +update)
+                self.BP.set_motor_power(self.ports[1], -self.total_power +update)
+
+        print([self.BP.get_motor_encoder(port) for port in self.ports])
+        self.BP.reset_all()
+        
+    def update_particles_straight(self, delta):
+        angles = self.particles[:,-2] #grab the angles of each particle
+        
+        update = np.array([[delta + random.gauss(0, 0.05) * np.cos(angles[i]), 
+                            delta + random.gauss(0, 0.05) * np.sin(angles[i]), 
+                            0, 
+                            0] for i in self.set_length])
+
+        self.particles += update
+        
+        #Display.draw_particles(self.particles[:,:-1])
+    
+    def update_particles_rotate(self, theta):
+        update = np.array([[0, 0, theta + random.gauss(0, 0.05), 0] for i in self.set_length])
+        
+        self.particles += update
+        
+        self.pos = tuple(np.mean(self.particles[:,:-1]))
+    
+    def draw_square(self):
+        for _ in range(4):
+            for _ in range(4):
+                self.go_straight(0.085)
+                self.update_particles_straight(10)
+                time.sleep(5)
+            self.turn_on_spot(90)
+            self.update_particles_rotate(90)
+    
+    

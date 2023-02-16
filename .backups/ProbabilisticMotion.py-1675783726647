@@ -1,0 +1,12 @@
+import Controller, brickpi3, numpy as np
+
+BP = brickpi3.BrickPi3()
+
+controller = Controller(BP)
+
+try:
+    controller.update_particles_straight(10)
+    
+
+except KeyboardInterrupt:
+    BP.reset_all()

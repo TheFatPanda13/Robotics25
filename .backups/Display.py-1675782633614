@@ -1,0 +1,14 @@
+def draw_particles(particles):
+    draw_square()
+    print("drawParticles:" + str(transform_particles(particles)))
+
+#transform the particles (x,y) coordinates to suitable screen coordinates
+def transform_particles(particles):
+    return [(some_transformation(x), some_transformation(y), theta) for (x,y,theta) in particles]
+
+
+#draws the square to the display
+def draw_square():
+    print("drawLine:", str(20,20,100,100))
+    
+draw_square()

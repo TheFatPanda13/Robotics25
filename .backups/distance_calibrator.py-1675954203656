@@ -5,16 +5,14 @@ BP = brickpi3.BrickPi3()
 BP.set_motor_limits(BP.PORT_B, dps = 200)
 BP.set_motor_limits(BP.PORT_C, dps = 200)
 
-def distance_to_degrees(distance):
-    return distance * 20.5
 
 try:
-    for distance in [10,10,10,10]:
+    for distance in [500,1000,1500,2000,2500]:
         StartingPositionB = BP.get_motor_encoder(BP.PORT_B)
         StartingPositionC = BP.get_motor_encoder(BP.PORT_C)
-        BP.set_motor_position(BP.PORT_B, StartingPositionB + distance_to_degrees(distance))
-        BP.set_motor_position(BP.PORT_C, StartingPositionC + distance_to_degrees(distance))
-        time.sleep(5)
+        BP.set_motor_position(BP.PORT_B, StartingPositionB + distance)
+        BP.set_motor_position(BP.PORT_C, StartingPositionC + distance)
+        time.sleep(25)
 
 except KeyboardInterrupt: 
     BP.reset_all()

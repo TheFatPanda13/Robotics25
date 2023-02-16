@@ -1,0 +1,14 @@
+import Controller, brickpi3, time, numpy as np
+
+BP = brickpi3.BrickPi3()
+
+controller = Controller.Controller(BP)
+
+try:
+    BP.set_motor_limits(BP.PORT_B, dps = 200)
+    BP.set_motor_limits(BP.PORT_C, dps = 200)
+    controller.go_straight(0.4)
+    
+
+except KeyboardInterrupt:
+    BP.reset_all()

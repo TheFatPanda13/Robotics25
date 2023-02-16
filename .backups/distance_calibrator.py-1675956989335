@@ -9,12 +9,12 @@ def distance_to_degrees(distance):
     return distance * 20.5
 
 try:
-    for distance in [10,10,10,10]:
+    for distance in [10,20,30,40,50]:
         StartingPositionB = BP.get_motor_encoder(BP.PORT_B)
         StartingPositionC = BP.get_motor_encoder(BP.PORT_C)
         BP.set_motor_position(BP.PORT_B, StartingPositionB + distance_to_degrees(distance))
         BP.set_motor_position(BP.PORT_C, StartingPositionC + distance_to_degrees(distance))
-        time.sleep(5)
+        time.sleep(25)
 
 except KeyboardInterrupt: 
     BP.reset_all()

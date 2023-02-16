@@ -1,0 +1,14 @@
+import Controller, brickpi3, time, numpy as np
+
+BP = brickpi3.BrickPi3()
+
+controller = Controller.Controller(BP)
+
+try:
+    controller.navigate_to_waypoint(0.4,0)
+    controller.navigate_to_waypoint(0.4,0.4)
+    controller.navigate_to_waypoint(0,0)
+    
+
+except KeyboardInterrupt:
+    BP.reset_all()

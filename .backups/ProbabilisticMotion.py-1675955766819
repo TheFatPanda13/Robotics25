@@ -1,0 +1,12 @@
+import Controller, brickpi3, time, numpy as np
+
+BP = brickpi3.BrickPi3()
+
+controller = Controller.Controller(BP)
+
+try:
+    controller.go_straight(0.40)
+    
+
+except KeyboardInterrupt:
+    BP.reset_all()

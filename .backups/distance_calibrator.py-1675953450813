@@ -1,0 +1,15 @@
+import brickpi3, time, numpy
+from Controller import Controller
+
+BP = brickpi3.BrickPi3()
+
+try:
+    controller = Controller(BP)
+    for distance in [500,1000,1500,2000,2500]:
+        BP.set_motor_position(BP.PORT_B + BP.PORT_C, distance)
+        time.sleep(25)
+
+except KeyboardInterrupt: 
+    BP.reset_all()
+
+

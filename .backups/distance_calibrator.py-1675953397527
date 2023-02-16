@@ -1,0 +1,17 @@
+import brickpi3, time, numpy
+from Controller import Controller
+
+BP = brickpi3.BrickPi3()
+
+try:
+    controller = Controller(BP)
+    for distance in [20, 40, 60, 80, 100]:
+        distance = distance / 100 
+        controller.go_straight(distance= distance)
+        controller.BP.reset_all()
+        time.sleep(25)
+
+except KeyboardInterrupt: 
+    BP.reset_all()
+
+

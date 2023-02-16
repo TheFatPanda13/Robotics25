@@ -1,0 +1,8 @@
+import Controller, brickpi3, numpy as np
+
+BP = brickpi3.BrickPi3()
+
+controller = Controller.Controller(BP)
+
+controller.update_particles_straight(10)
+    
