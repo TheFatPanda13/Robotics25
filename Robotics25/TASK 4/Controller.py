@@ -1,7 +1,8 @@
 import time, brickpi3, random, Display, numpy as np
+from environnement import Environnement
 
 class Controller():
-    def __init__(self, BP = None, wheel_radius = 0.0255, wheelbase = 0.152, total_power = 20, set_length = 100):
+    def __init__(self, BP = None,environnement=None wheel_radius = 0.0255, wheelbase = 0.152, total_power = 20, set_length = 100):
         self.BP = BP
         
         self.wheel_radius = wheel_radius
@@ -10,7 +11,7 @@ class Controller():
 
         self.ports = [self.BP.PORT_B, self.BP.PORT_C]
         self.total_power = total_power
-        
+        self.environment=environnement
         particle = np.array([0,0,0,1/set_length])
         self.particles = np.tile(particle, (100,1)) #initialise particle set shape 100, 4
         self.set_length = set_length
