@@ -23,15 +23,20 @@ class Controller():
     
     def get_sensor_input(self):
         
-        time.sleep(0.02)
         try:
-            time.sleep(0.02)
-            value=self.BP.get_sensor(self.BP.PORT_1)
-            time.sleep(0.02)
-            return value
-        except brickpi3.SensorError as error:
-            print(error)
-        return 255
+            while True:
+                try:
+                    value = self.BP.get_sensor(self.BP.PORT_2)
+                    print(value)
+                    self.BP.reset_all()
+                    return value                       # print the distance in CM
+                except brickpi3.SensorError as error:
+                    print(error)
+                time.sleep(0.02)
+            
+                #time.sleep(0.02) 
+        except KeyboardInterrupt:
+            self.BP.reset_all()
 
 
 
