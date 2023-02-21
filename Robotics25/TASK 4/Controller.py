@@ -3,6 +3,7 @@ import time, brickpi3, random, Display, numpy as np
 class Controller():
     def __init__(self, BP = None, wheel_radius = 0.0255, wheelbase = 0.152, total_power = 20, set_length = 100):
         self.BP = BP
+        
         self.wheel_radius = wheel_radius
         self.wheelbase = wheelbase
         self.wheel_circ = 2 * np.pi * self.wheel_radius
@@ -17,7 +18,15 @@ class Controller():
         
         self.BP.set_motor_limits(BP.PORT_B, dps = 300)
         self.BP.set_motor_limits(BP.PORT_C, dps = 300)
-        
+        BP.set_sensor_type(BP.PORT_1,BP.SENSOR_TYPE.NXT_ULTRASOSONIC)
+    def get_sensor_input(self):
+        try :
+            value=self.BP.get_sensor(BP.PORT_1)
+            return value
+        except brickpi3.SensorError as error:
+            print(error)
+        return 255
+
 
     # distance is in meters
     def convert_distance_to_rotation(self, distance):
@@ -50,6 +59,9 @@ class Controller():
         #self.BP.reset_all()
         
         self.update_particles_straight(distance)
+        sensor_input=self.get_sensor_input()
+        self.update_weight_particles(sensor_input,self.environment,sigma=0.5)
+        self.resampling()
 
     def robot_angle_to_wheel_rotation(self, angle):
         dist = self.wheelbase * angle / 360 * np.pi 
@@ -83,8 +95,10 @@ class Controller():
         print([np.abs(self.BP.get_motor_encoder(port)) - degrees_to_rotate for port in self.ports])
         self.BP.set_motor_power(self.ports[0], 0)
         self.BP.set_motor_power(self.ports[1], 0)
-        
+        sensor_input=self.get_sensor_input()
         self.update_particles_rotate(angle)
+        self.update_weight_particles(sensor_input,self.environment,sigma=0.5)
+        self.resampling()
 
     def update_particles_straight(self, delta):
         angles = self.particles[:,-2] #grab the angles of each particle
@@ -106,6 +120,20 @@ class Controller():
         self.particles += update
         
         self.pos = np.array(np.mean(self.particles[:,:-1], axis=0))
+    def update_weight_particles(self,sensor_input,environment,sigma):
+        total_norm=0
+        for particle in self.particles:
+            distance=environment.compute_distance_to_wall(particle[:1],particle[2])
+            error=distance-sensor_input
+            likelihood=np.exp(-(error/sigma)**2)
+            total_norm+=likelihood
+            particle[3]*=likelihood
+        self.particles[3]/=total_norm
+    def resampling(self):
+        weights=self.particles[3]
+        self.particles=np=random.choice(self.particles, size=len(self.particles), replace=True, p=weights)
+
+
     
     def draw_square(self):
         for _ in range(4):

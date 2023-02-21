@@ -35,7 +35,7 @@ class Environnement :
         print(dist)
         dist-=position
         
-        return min([np.linalg.norm(i) for i in dist])
+        return min([np.linalg.norm(i)for i in dist])
     
     
 
