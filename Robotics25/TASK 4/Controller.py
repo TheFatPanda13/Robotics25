@@ -2,7 +2,7 @@ import time, brickpi3, random, Display, numpy as np
 from environnement import Environnement
 
 class Controller():
-    def __init__(self, BP = None,environnement=None wheel_radius = 0.0255, wheelbase = 0.152, total_power = 20, set_length = 100):
+    def __init__(self, BP = None,environnement=None, wheel_radius = 0.0255, wheelbase = 0.152, total_power = 20, set_length = 100):
         self.BP = BP
         
         self.wheel_radius = wheel_radius
@@ -19,14 +19,18 @@ class Controller():
         
         self.BP.set_motor_limits(BP.PORT_B, dps = 300)
         self.BP.set_motor_limits(BP.PORT_C, dps = 300)
-        BP.set_sensor_type(BP.PORT_1,BP.SENSOR_TYPE.NXT_ULTRASOSONIC)
+        self.BP.set_sensor_type(BP.PORT_1,BP.SENSOR_TYPE.NXT_ULTRASONIC)
     def get_sensor_input(self):
-        try :
-            value=self.BP.get_sensor(BP.PORT_1)
+        time.sleep(0.02)
+        try:
+            time.sleep(0.02)
+            value=self.BP.get_sensor(self.BP.PORT_1)
+            time.sleep(0.02)
             return value
         except brickpi3.SensorError as error:
             print(error)
         return 255
+
 
 
     # distance is in meters
@@ -124,15 +128,20 @@ class Controller():
     def update_weight_particles(self,sensor_input,environment,sigma):
         total_norm=0
         for particle in self.particles:
-            distance=environment.compute_distance_to_wall(particle[:1],particle[2])
+            distance=environment.compute_distance_to_wall(particle[:2],particle[2])
             error=distance-sensor_input
+            print(f"Error {error}, distance: {distance}")
             likelihood=np.exp(-(error/sigma)**2)
+            print(f"likelihood {likelihood}")
             total_norm+=likelihood
+
             particle[3]*=likelihood
-        self.particles[3]/=total_norm
+        self.particles[:, 3]/=total_norm
     def resampling(self):
-        weights=self.particles[3]
-        self.particles=np=random.choice(self.particles, size=len(self.particles), replace=True, p=weights)
+        weights=self.particles[:,3]
+        print(weights)
+        idxs=np.random.choice(np.arange(0, len(self.particles)), size=len(self.particles), replace=True, p=weights)
+        self.particles = self.particles[idxs]
 
 
     
