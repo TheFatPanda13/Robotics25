@@ -20,7 +20,9 @@ class Controller():
         self.BP.set_motor_limits(BP.PORT_B, dps = 300)
         self.BP.set_motor_limits(BP.PORT_C, dps = 300)
         self.BP.set_sensor_type(BP.PORT_1,BP.SENSOR_TYPE.NXT_ULTRASONIC)
+    
     def get_sensor_input(self):
+        self.BP.set_sensor_type(self.BP.PORT_1,self.BP.SENSOR_TYPE.NXT_ULTRASONIC)
         time.sleep(0.02)
         try:
             time.sleep(0.02)
