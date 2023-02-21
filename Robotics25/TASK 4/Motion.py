@@ -1,6 +1,7 @@
 import Controller, brickpi3, time, numpy as np
 from environnement import Environnement
 BP = brickpi3.BrickPi3()
+BP.set_sensor_type(BP.PORT_1,BP.SENSOR_TYPE.NXT_ULTRASONIC)
 env=Environnement([[[100,-100],[100,100]]],200)
 controller = Controller.Controller(BP,env)
 
