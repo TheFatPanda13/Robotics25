@@ -29,8 +29,8 @@ class Map:
                 ms[i] = 1000000
             else:
                 ms[i] = num/denom
-        valid = np.where(ms>0, ms, ms)
-        return np.min(valid), ms
+        #valid = np.where(ms>0, ms, ms)
+        return ms
 
     def calculate_likelihood(self, position, theta, z, sigma):
         m = self.dist_to_wall(position, theta)
@@ -52,6 +52,41 @@ class Map:
             ans = False
 
         return ans
+
+    def is_valid_intersection(self, dists, position, theta):
+        theta = np.deg2rad(theta)
+        ans = np.ones(len(self.walls), dtype=bool)
+        for i,m in enumerate(dists):
+            if m<0:
+                ans[i] = False
+            else:
+                x_int = position[0] + m*np.cos(theta)
+                y_int = position[1] + m*np.sin(theta)
+                if not self.is_in_map([x_int, y_int]):
+                    ans[i] = False
+                else:
+                    if not self.is_point_between([position[0], position[1]], self.walls[i]):
+                        ans[i] = False
+        return ans
+
+    def is_point_between(self, point, edge):
+        x0, y0 = edge[0]
+        x1, y1 = edge[1]
+        ans = True
+        if point[0]<min(x0,x1):
+            ans = False
+        if point[0]>max(x0,x1):
+            ans = False
+        if point[1] > max(y0,y1):
+            ans = False
+        if point[1] < min(y0,y1):
+            ans = False
+        return ans
+
+
+
+            
+
 
 
     
