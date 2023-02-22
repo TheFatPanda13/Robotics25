@@ -32,9 +32,12 @@ class Map:
         #valid = np.where(ms>0, ms, ms)
         return ms
 
-    def calculate_likelihood(self, position, theta, z, sigma):
-        m = self.dist_to_wall(position, theta)
-        likelihood = np.exp(-((z-m)**2)/sigma**2)
+    def calculate_likelihood(self, position, theta, z, sigma, k=0.05):
+        dists = self.dist_to_wall(position, theta)
+        valid_idxs = self.is_valid_intersection(dists, position, theta)
+        valid_dists = dists[valid_idxs]
+        m = np.min(valid_dists)
+        likelihood = np.exp(-((z-m)**2)/sigma**2) + k
         return likelihood
 
     def is_in_map(self, position):
@@ -82,6 +85,13 @@ class Map:
         if point[1] < min(y0,y1):
             ans = False
         return ans
+
+    def draw_particles(self, particles):
+        print("drawParticles:" + str(self.transform_particles(particles)))
+
+#transform the particles (x,y) coordinates to suitable screen coordinates
+    def transform_particles(self, particles):
+        return [(x, 210 - y, theta) for (x,y,theta) in particles]
 
 
 

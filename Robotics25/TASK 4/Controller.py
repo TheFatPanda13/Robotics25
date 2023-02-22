@@ -13,9 +13,10 @@ class Controller():
         self.total_power = total_power
         self.environment=environnement
         particle = np.array([0,0,0,1/set_length])
-        self.particles = np.tile(particle, (100,1)) #initialise particle set shape 100, 4
+        self.particles = np.tile(particle, (set_length,1)) #initialise particle set shape 100, 4
         self.set_length = set_length
         self.pos = np.array([0,0,0])
+        self.sigma = 10
         
         self.BP.set_motor_limits(BP.PORT_B, dps = 300)
         self.BP.set_motor_limits(BP.PORT_C, dps = 300)
@@ -50,7 +51,6 @@ class Controller():
 
         #positions = np.array([self.BP.get_motor_encoder(port) for port in self.ports])
 
-
         self.BP.set_motor_position(self.BP.PORT_B, self.convert_distance_to_rotation(distance))
         self.BP.set_motor_position(self.BP.PORT_C, self.convert_distance_to_rotation(distance))
         """
@@ -72,7 +72,7 @@ class Controller():
         
         self.update_particles_straight(distance)
         sensor_input=self.get_sensor_input()
-        self.update_weight_particles(sensor_input,self.environment,sigma=0.5)
+        self.update_weight_particles(sensor_input,self.environment,sigma=self.sigma)
         self.resampling()
 
     def robot_angle_to_wheel_rotation(self, angle):
@@ -109,7 +109,7 @@ class Controller():
         self.BP.set_motor_power(self.ports[1], 0)
         sensor_input=self.get_sensor_input()
         self.update_particles_rotate(angle)
-        self.update_weight_particles(sensor_input,self.environment,sigma=0.5)
+        self.update_weight_particles(sensor_input,self.environment,sigma=self.sigma)
         self.resampling()
 
     def update_particles_straight(self, delta):
@@ -132,23 +132,25 @@ class Controller():
         self.particles += update
         
         self.pos = np.array(np.mean(self.particles[:,:-1], axis=0))
+
     def update_weight_particles(self,sensor_input,environment,sigma):
-        total_norm=0
         for particle in self.particles:
-            distance=environment.compute_distance_to_wall(particle[:2],particle[2])
-            error=distance-sensor_input
-            print(f"Error {error}, distance: {distance}")
-            likelihood=np.exp(-(error/sigma)**2)
-            print(f"likelihood {likelihood}")
-            total_norm+=likelihood
+            #distance=environment.compute_distance_to_wall(particle[:2],particle[2])
+            #error=distance-sensor_input
+            #print(f"Error {error}, distance: {distance}")
+            #likelihood=np.exp(-(error/sigma)**2)
+            #print(f"likelihood {likelihood}")
+            likelihood = environment.calculate_likelihood(particle[:2], particle[3], sensor_input, self.sigma)
 
             particle[3]*=likelihood
-        self.particles[:, 3]/=total_norm
+        self.particles[:, 3] = self.particles[:,3]/np.sum(self.particles[:,3])
+
     def resampling(self):
         weights=self.particles[:,3]
         print(weights)
         idxs=np.random.choice(np.arange(0, len(self.particles)), size=len(self.particles), replace=True, p=weights)
         self.particles = self.particles[idxs]
+        self.particles[:,3] = 1/len(self.particles)
 
 
     
