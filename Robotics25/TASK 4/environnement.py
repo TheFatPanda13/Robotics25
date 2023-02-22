@@ -3,6 +3,7 @@ class Environnement :
     def __init__(self, edges,max_dim):
         self.edges=edges
         self.max_dim=max_dim
+
     def compute_edge_intersetion(self,edge,position,orientation):
        
         x1,y1 = edge[0]
@@ -25,6 +26,7 @@ class Environnement :
         x = x1 + ua * (x2-x1)
         y = y1 + ua * (y2-y1)
         return [x,y]
+
     def compute_distance_to_wall(self,position,orientation):
         dist=[]
         for ed in self.edges:

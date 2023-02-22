@@ -1,18 +1,21 @@
 import time
-
+import brickpi3
+import Controller
 BP = brickpi3.BrickPi3()
+controller = Controller.Controller(BP)
+BP.set_sensor_type(BP.PORT_2,BP.SENSOR_TYPE.NXT_ULTRASONIC)
 
-BP.set_sensor_type(BP.PORT_1,BP.SENSOR_TYPE.NXT_ULTRASONIC)
-
-def get_sensor_data():
-    try:
-        value = BP.get_sensor(BP.PORT_1)
-        print(value)                         # print the distance in CM
-    except brickpi3.SensorError as error:
-        print(error)
-        
-    time.sleep(0.02) 
-
-for _ in range(100):
-    time.sleep(0.02)
-    print(get_sensor_data())
+try:
+    while True:
+        try:
+            value = BP.get_sensor(BP.PORT_2)
+            print(value)
+            BP.reset_all()
+            print(value)                       # print the distance in CM
+        except brickpi3.SensorError as error:
+            print(error)
+        time.sleep(0.02)
+    
+        #time.sleep(0.02) 
+except KeyboardInterrupt:
+    BP.reset_all()
